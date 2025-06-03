@@ -1,0 +1,25 @@
+{
+  "name": "sanjuuni-ts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild index.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js --loader:.node=file",
+    "buildjs": "esbuild index.js --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+    "buildnew": "esbuild index.ts --platform=node --target=es2020 --outfile=dist/index.js --loader:.node=file"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.149",
+    "@types/node": "^22.15.26",
+    "esbuild": "^0.25.5",
+    "tsx": "^4.19.4"
+  },
+  "dependencies": {
+    "jimp": "^1.6.0",
+    "sanjuuni": "^0.5.3"
+  }
+}
