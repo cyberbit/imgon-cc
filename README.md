@@ -1,6 +1,6 @@
 # imgon-cc
 
-Imgon is a deployment of [sanjuuni](https://github.com/MCJack123/sanjuuni) for the general public, offering conversion of online images to ComputerCraft formats before download, via URL prepending. It uses bindings from [node-sanjuuni](https://github.com/MCJack123/node-sanjuuni) and some API inspiration from [sanjuuni-server](https://github.com/SkyTheCodeMaster/sanjuuni-server) (though the interface has been overhauled, and it is not a dependency).
+Imgon is a cloud-native deployment of [sanjuuni](https://github.com/MCJack123/sanjuuni), offering conversion of online images to ComputerCraft formats before download, via URL prepending. It uses bindings from [node-sanjuuni](https://github.com/MCJack123/node-sanjuuni) and some inspiration from [sanjuuni-server](https://github.com/SkyTheCodeMaster/sanjuuni-server) (though the interface has been overhauled, and it is not a dependency).
 
 The `lambda` folder defines a Docker container that runs node-sanjuuni in an AWS Lambda compatibility layer.
 
