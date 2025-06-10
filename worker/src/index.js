@@ -40,7 +40,13 @@ async function forwardRequest(request, pathWithSearch, env) {
     const originRequest = new Request(request)
     originRequest.headers.delete("cookie")
 
-    return await fetch(`https://${API_HOST}${pathWithSearch}`, originRequest)
+    let res = await fetch(`https://${API_HOST}${pathWithSearch}`, originRequest)
+
+    res = new Response(res.body, res)
+
+    res.headers.set("access-control-allow-origin", "*")
+
+    return res
 }
 
 export default {
