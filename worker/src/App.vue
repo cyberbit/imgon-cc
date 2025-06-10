@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-import { computed, h, ref } from 'vue'
+import { ref } from 'vue'
 
 import Uppy from '@uppy/core'
 import AwsS3 from '@uppy/aws-s3'
-import { Dashboard, UppyContextProvider } from '@uppy/vue'
+import { Dashboard } from '@uppy/vue'
 
 import '@uppy/core/dist/style.css'
 import '@uppy/dashboard/dist/style.css'
 
 const uppy = new Uppy().use(AwsS3, {
-    id: 'awsPlugin',
-    endpoint: '/',
-})
+        id: 'awsPlugin',
+        endpoint: '/',
+    })
 
 const lua = ref('upload something')
 
