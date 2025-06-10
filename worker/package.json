@@ -21,6 +21,7 @@
 		"@uppy/progress-bar": "^4.2.1",
 		"@uppy/vue": "^2.2.0",
 		"aws4fetch": "^1.0.20",
+		"regexp.escape": "^2.0.1",
 		"vue": "^3.5.13",
 		"vue-router": "^4.5.0"
 	},
@@ -28,6 +29,7 @@
 		"@cloudflare/vite-plugin": "^1.5.0",
 		"@tsconfig/node22": "^22.0.1",
 		"@types/node": "^22.14.0",
+		"@types/regexp.escape": "^2.0.0",
 		"@vitejs/plugin-vue": "^5.2.3",
 		"@vue/tsconfig": "^0.7.0",
 		"npm-run-all2": "^7.0.2",

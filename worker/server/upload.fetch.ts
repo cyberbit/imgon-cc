@@ -75,10 +75,28 @@ const routeSignOnServer = async (request: Request, env: Env, ctx: ExecutionConte
   )
 }
 
+const deleteObject = async (env: Env, key: string) => {
+  const aws = getAwsClient(env)
+
+  const url = `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.amazonaws.com/${key}`
+  const signed = await aws.sign(url, {
+    method: 'DELETE',
+    aws: {
+      signQuery: true
+    },
+  })
+
+  return fetch(signed.url, {
+    method: 'DELETE',
+    headers: signed.headers,
+  })
+}
+
 export {
   getAwsClient,
   generateS3Key,
   extractFileParameters,
   validateFileParameters,
   routeSignOnServer,
+  deleteObject,
 }
