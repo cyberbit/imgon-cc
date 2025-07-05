@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 
 import Uppy from '@uppy/core'
 import AwsS3 from '@uppy/aws-s3'
 import { Dashboard } from '@uppy/vue'
 
-import { luaToJSON, FormatOption, DitheringOption } from './modules/sanjuuni'
+import { luaToJSON, parseRawmodePacket, FormatOption, DitheringOption, defaultPalette } from './modules/sanjuuni'
 
 import type { DownloadSpec } from './modules/download'
 import { downloadData, formatBytes } from './modules/download'
+
+import { blit } from './modules/canvas'
 
 import '@uppy/core/dist/style.css'
 import '@uppy/dashboard/dist/style.css'
@@ -28,6 +30,9 @@ const dithering = ref(DitheringOption.None)
 const format = ref(FormatOption.Bimg)
 const downloads = ref<DownloadSpec[]>([])
 
+// template refs
+const canvas = useTemplateRef('canvas')
+
 // Download all files in the downloads array
 function downloadAll() {
     downloads.value.forEach(download => {
@@ -44,22 +49,30 @@ uppy.on('upload-success', async (file, res) => {
     const { uploadURL } = res
 
     const converted = await fetch(`/${width.value}x${height.value}:F${format.value}:D${dithering.value}/` + uploadURL)
-    const blob = await converted.blob()
+    const resJson = await converted.json()
 
     downloads.value.unshift({
-        data: blob,
-        size: blob.size,
+        data: resJson.lua,
+        size: resJson.lua.length,
         filename: `imgon.${file ? file.name + '.' : ''}${format.value}`,
         type: 'application/x-lua',
     })
 
-    // lua.value = await converted.text()
+    lua.value = resJson.lua
 
-    // const imgJson = luaToJSON(`return ${lua.value}`)
+    // console.log('lua', lua.value)
 
-    // console.log('json', imgJson)
+	const resBuf = new ArrayBuffer(resJson.raw.length);
+	const resView = new Uint8Array(resBuf);
+	for (let i = 0; i < resJson.raw.length; i++) {
+		resView[i] = resJson.raw.charCodeAt(i) & 0xFF;
+	}
 
-    // const sixels = imgJson[0].map((v: string[], k: number) => {
+    const imgJson = parseRawmodePacket(resBuf)
+
+    console.log('json', imgJson)
+
+    // const sixels = imgJson.terminalData?.textData?.canvasData.map((c, i) => {
     //     const [ blit, fg, bg ] = v
 
     //     const blitParsed = blit.match(/( |\\\d{3})/g)?.map(c => {
@@ -75,6 +88,49 @@ uppy.on('upload-success', async (file, res) => {
     // })
     
     // console.log('sixels', sixels)
+
+    // console.log('sixel 16', sixels[16])
+
+    if (canvas.value) {
+        const ctx = canvas.value.getContext('2d');
+
+        if (ctx) {
+            // blit(ctx, sixels[16].blitParsed, [], [])
+
+            // reference impl
+            // for (let i = 0; i < sixels.length; i++) {
+            //     const { blitParsed, fg, bg } = sixels[i]
+            //     blit(0, i * 3, ctx, blitParsed, fg, bg)
+            // }
+
+            // loop over height, then width
+            if (imgJson.terminalData) {
+                const palette = imgJson.terminalData.palette;
+                const textData = imgJson.terminalData.textData;
+                const colorData = imgJson.terminalData.colorData?.canvasData;
+
+                for (let y = 0; y < imgJson.terminalData?.height; y++) {
+                    for (let x = 0; x < imgJson.terminalData?.width; x++) {
+                        const index: number = y * imgJson.terminalData?.width + x;
+                        const data = imgJson.terminalData?.textData?.canvasData[index];
+
+                        // colorData: Array of numbers (0-15) representing palette indices as pairs [background, foreground]
+                        const bg = colorData ? colorData[index * 2] : 0;
+                        const fg = colorData ? colorData[index * 2 + 1] : 0;
+
+                        blit(
+                            x * 2, // x position in pixels
+                            y * 3,     // y position in pixels
+                            ctx,
+                            data ?? 0,  // blit data
+                            palette?.colors[bg]?.style ?? '#000000',  // background color
+                            palette?.colors[fg]?.style ?? '#FFFFFF' // foreground color
+                        );
+                    }
+                }
+            }
+        }
+    }
 })
 </script>
 
@@ -110,6 +166,7 @@ uppy.on('upload-success', async (file, res) => {
                 </div>
                 <div>
                     <h2>results ({{ downloads.length }})</h2>
+                    <canvas ref="canvas" />
                     <button @click="downloads = []">clear</button>
                     <button @click="downloadAll">download all of them!!</button>
                     <ul>

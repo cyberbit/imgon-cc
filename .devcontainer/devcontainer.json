@@ -7,13 +7,15 @@
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:22",
 
 	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
 		// "ghcr.io/davzucky/devcontainers-features-wolfi/docker-outside-of-docker:1": {}
 	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"henrynguyen5-vsc.vsc-nvm",
-				"Vue.volar"
+				"Vue.volar",
+				"mikestead.dotenv"
 			]
 		}
 	},

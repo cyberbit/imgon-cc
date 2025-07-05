@@ -164,10 +164,15 @@ export const handler = async (event, context) => {
             headers = { 'Content-Type': 'text/x-lua' };
         }
 
+        console.log('image generated')
+
         return {
             statusCode: 200,
             headers,
-            body,
+            body: {
+                lua: body,
+                raw: sanjuuni.makeRawImage(indexedImg, chosenPalette),
+            },
         };
     } else {
         // return { statusCode: 400, body: 'Invalid path format' };
